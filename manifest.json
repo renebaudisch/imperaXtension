@@ -1,0 +1,26 @@
+{
+  "name": "Impera Online Chrome Extension",
+  "version": "1.0",
+  "description": "Be informed",
+  "permissions": ["tabs", "activeTab", "declarativeContent", "storage"],
+  "background": {
+    "scripts": ["assets/js/background.js"],
+    "persistent": false
+  },
+  "page_action": {
+    "default_popup": "assets/interfaces/popup.html",
+    "default_icon": {
+      "16": "assets/img/logo_150.png",
+      "32": "assets/img/logo_150.png",
+      "48": "assets/img/logo_150.png",
+      "128": "assets/img/logo_150.png"
+    }
+  },
+  "icons": {
+    "16": "assets/img/logo_150.png",
+    "32": "assets/img/logo_150.png",
+    "48": "assets/img/logo_150.png",
+    "128": "assets/img/logo_150.png"
+  },
+  "manifest_version": 2
+}
