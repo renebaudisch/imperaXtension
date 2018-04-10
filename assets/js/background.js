@@ -3,6 +3,7 @@ chrome.runtime.onInstalled.addListener(function() {
         imperaOnline: {
             user: "",
             pass: "",
+            auth: {},
             gameCounter: 0,
             gameList: []
         }

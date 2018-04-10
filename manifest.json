@@ -2,14 +2,11 @@
   "name": "Impera Online Chrome Extension",
   "version": "1.0",
   "description": "Be informed",
-  "permissions": ["tabs", "activeTab", "declarativeContent", "storage"],
+  "permissions": ["tabs", "activeTab", "declarativeContent", "storage", "https://www.imperaonline.de/"],
   "background": {
     "scripts": ["assets/js/background.js"],
     "persistent": false
   },
-  "permissions": [
-    "https://www.imperaonline.de"
-  ],
   "page_action": {
     "default_popup": "assets/interfaces/popup.html",
     "default_icon": {
