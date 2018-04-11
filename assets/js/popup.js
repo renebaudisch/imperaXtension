@@ -8,10 +8,10 @@ chrome.storage.sync.get('imperaOnline', function(data) {
             document.getElementById('loginPass').value = data.pass;
         } else {
             document.querySelector('#loginContainer').style.display =" none";
+            setInterval(imperaXtension.getSummary, 5000);
         }
     } else {
         document.querySelector('#loginContainer').style.display =" block";
-        setInterval(imperaXtension.getSummary, 5000);
     }
 });
 
