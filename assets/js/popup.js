@@ -7,64 +7,23 @@ chrome.storage.sync.get('imperaOnline', function(data) {
             document.getElementById('loginName').value = data.user;
             document.getElementById('loginPass').value = data.pass;
         } else {
-            imperaXtension.auth = data.auth;
+            if (backend.imperaXtension.gameCounter > 0) {
+                document.getElementById("gameList").innerText = "Du bist in diesen " + backend.imperaXtension.gameCounter + " Spielen am Zug:";
+            } else {
+                document.getElementById("gameList").innerText = "Du bist leider in keinem Spiel am Zug :(";
+            }
             document.querySelector('#loginContainer').style.display =" none";
-            imperaXtension.getSummary();
-            setInterval(imperaXtension.getSummary, 5000);
         }
     } else {
         document.querySelector('#loginContainer').style.display =" block";
     }
 });
 
-let imperaXtension = {
-    login: function() {
-        let user = document.getElementById('loginName');
-        let pass = document.getElementById('loginPass');
-        let xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4) {
-                let imperaOnlineAuth = JSON.parse(xhr.responseText);
-                imperaXtension.user = document.getElementById('loginName').value;
-                imperaXtension.pass = document.getElementById('loginPass').value;
-                imperaXtension.auth = imperaOnlineAuth;
-                chrome.storage.sync.set({
-                    imperaOnline: {
-                        user: document.getElementById('loginName').value,
-                        pass: document.getElementById('loginPass').value,
-                        auth: imperaOnlineAuth
-                    }
-                });
-                setTimeout(imperaXtension.login, imperaOnlineAuth.expires_in - 100);
-                document.querySelector('#loginContainer').style.display =" none";
-                imperaXtension.getSummary();
-                setInterval(imperaXtension.getSummary, 5000);
-            }
-        };
-        xhr.open("POST", "https://www.imperaonline.de/api/Account/token?", true);
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.send("grant_type=password"+
-            "&username=" + user.value +
-            "&password=" + pass.value +
-            "&scope=openid%20offline_access%20roles");
-    },
-    getSummary: function(){
-        let xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4) {
-                // innerText does not let the attacker inject HTML elements.
-                let summary = JSON.parse(xhr.responseText);
-                if (summary.numberOfGames > 0) {
-                    document.getElementById("gameList").innerText = "Du bist in diesen " + summary.numberOfGames + " Spielen am Zug:";
-                } else {
-                    document.getElementById("gameList").innerText = "Du bist leider in keinem Spiel am Zug :(";
-                }
-            }
-        };
-        xhr.open("GET", "https://www.imperaonline.de/api/notifications/summary", true);
-        xhr.setRequestHeader('Authorization', imperaXtension.auth.token_type + ' ' + imperaXtension.auth.access_token);
-        xhr.send();
-    }
-};
+var backend = chrome.extension.getBackgroundPage();
+chrome.extension.getBackgroundPage().frontend = this;
 
-loginSubmit.onclick = imperaXtension.login;
+loginSubmit.onclick = function() {
+    var user = document.getElementById('loginName').value;
+    var pass = document.getElementById('loginPass').value;
+    backend.imperaXtension.login(user, pass);
+};
