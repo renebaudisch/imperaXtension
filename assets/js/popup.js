@@ -7,7 +7,9 @@ chrome.storage.sync.get('imperaOnline', function(data) {
             document.getElementById('loginName').value = data.user;
             document.getElementById('loginPass').value = data.pass;
         } else {
+            imperaXtension.auth = data.auth;
             document.querySelector('#loginContainer').style.display =" none";
+            imperaXtension.getSummary();
             setInterval(imperaXtension.getSummary, 5000);
         }
     } else {
@@ -23,6 +25,9 @@ let imperaXtension = {
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4) {
                 let imperaOnlineAuth = JSON.parse(xhr.responseText);
+                imperaXtension.user = document.getElementById('loginName').value;
+                imperaXtension.pass = document.getElementById('loginPass').value;
+                imperaXtension.auth = imperaOnlineAuth;
                 chrome.storage.sync.set({
                     imperaOnline: {
                         user: document.getElementById('loginName').value,
@@ -30,7 +35,10 @@ let imperaXtension = {
                         auth: imperaOnlineAuth
                     }
                 });
-                setTimeout(imperaXtension.login, imperaOnlineAuth.expires_in - 100)
+                setTimeout(imperaXtension.login, imperaOnlineAuth.expires_in - 100);
+                document.querySelector('#loginContainer').style.display =" none";
+                imperaXtension.getSummary();
+                setInterval(imperaXtension.getSummary, 5000);
             }
         };
         xhr.open("POST", "https://www.imperaonline.de/api/Account/token?", true);
@@ -54,7 +62,7 @@ let imperaXtension = {
             }
         };
         xhr.open("GET", "https://www.imperaonline.de/api/notifications/summary", true);
-        xhr.setRequestHeader('Authorization', data.auth.token_type + ' ' + data.auth.access_token);
+        xhr.setRequestHeader('Authorization', imperaXtension.auth.token_type + ' ' + imperaXtension.auth.access_token);
         xhr.send();
     }
 };

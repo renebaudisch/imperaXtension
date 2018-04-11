@@ -18,3 +18,5 @@ chrome.runtime.onInstalled.addListener(function() {
         }]);
     });
 });
+
+let test = "myTest";
