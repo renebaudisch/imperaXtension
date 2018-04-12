@@ -55,14 +55,10 @@ var imperaXtension = {
                     chrome.browserAction.setBadgeBackgroundColor({color:[255, 0, 0, 130]});
                     chrome.browserAction.setBadgeText({text: String(logoNumber)});
                 } else {
-                    frontend.getElementById("gameList").innerText = "Du bist leider in keinem Spiel am Zug :(";
+                    frontend.document.getElementById("gameList").innerText = "Du bist leider in keinem Spiel am Zug :(";
                     chrome.browserAction.setBadgeBackgroundColor({color:[190, 190, 190, 230]});
                     chrome.browserAction.setBadgeText({text: ""});
                 }
-                /*chrome.browserAction.setIcon({
-                    tabId: undefined,
-                    path : "/assets/img/logo" + logoNumber + ".png"
-                });*/
             }
         };
         xhr.open("GET", "https://www.imperaonline.de/api/notifications/summary", true);
