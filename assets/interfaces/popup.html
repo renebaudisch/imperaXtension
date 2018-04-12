@@ -3,15 +3,65 @@
 <head>
     <style>
 
-        .mainContainer {
-            width: 300px;
-            height: 350px;
+        html, body {
+            margin: 0;
+            padding: 0;
+            background: url(/assets/img/background.png) repeat #fff;
         }
 
-        button {
-            height: 30px;
-            width: 30px;
-            outline: none;
+        .mainContainer {
+            min-width: 220px;
+            margin: 5px;
+        }
+
+        #loginContainer > div {
+            margin-bottom: 2px;
+        }
+
+        .headline {
+            text-decoration: underline;
+            font-weight: bold;
+            padding-bottom: 10px;
+        }
+
+        .loginInputLabel {
+            width: 40px;
+            display: inline-block;
+        }
+
+        .gamelist a {
+            position: relative;
+            display: block;
+            width: 100%;
+            height: 20px;
+        }
+
+        .gameName{
+            position: absolute;
+            left: 0;
+        }
+
+        .gameTime{
+            position: absolute;
+            right: 0;
+        }
+
+        input[type="submit"] {
+            background-color: #e6c954;
+            color: #fff;
+            width: 216px;
+            border: none;
+            margin-top: 5px;
+            padding: 5px;
+            font-weight: 400;
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 1.42857;
+            transition: padding .3s cubic-bezier(.175,.885,.32,1.275);
+        }
+
+        input[type="submit"]:hover {
+            background-color: #dfbb28;
         }
 
     </style>
@@ -19,8 +69,8 @@
 <body>
 <div class="mainContainer">
     <div id="loginContainer">
-        <div>Impera-Login:</div>
-        <div>
+        <div class="headline">Impera-Login:</div>
+        <div class="inputBox">
             <span class="loginInputLabel">
                 <label for="loginName">User:</label>
             </span>
@@ -28,7 +78,7 @@
                 <input type="text" id="loginName" />
             </span>
         </div>
-        <div>
+        <div class="inputBox">
             <span class="loginInputLabel">
                 <label for="loginPass">Pass:</label>
             </span>
@@ -38,8 +88,11 @@
         </div>
         <input id="loginSubmit" type="submit" value="Login" />
     </div>
-    <div id="gameList">
+    <div id="loggedInContainer">
+        <div id="gameList">
 
+        </div>
+        <input id="logout" type="submit" value="Logout" />
     </div>
 </div>
 <script src="/assets/js/popup.js"></script>
