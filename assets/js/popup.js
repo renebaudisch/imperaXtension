@@ -15,17 +15,26 @@ var imperaXtension = {
         return days + " " + hours + ":" + minutes + ":" + seconds;
     },
     renderGameList: function() {
+        let ids = [];
         var gameList = document.createElement('div');
         gameList.setAttribute('class', "gamelist");
         gameList.innerHTML = "<div class='headline'>Du bist in diesen " + backend.imperaXtension.gameCounter + " Spielen am Zug:</div>";
         for (var i = 0; i < backend.imperaXtension.gameList.length; i++) {
-            gameList.innerHTML += "<div><a target='_blank' href='https://www.imperaonline.de/play/" + backend.imperaXtension.gameList[i].id + "'>" +
+            gameList.innerHTML += "<div><a target='_blank' id='" + backend.imperaXtension.gameList[i].id + "'>" +
                 "<div class='gameName'>" + backend.imperaXtension.gameList[i].name + "</div>" +
                 "<div class='gameTime'>" + imperaXtension.humanDate(backend.imperaXtension.gameList[i].timeoutSecondsLeft * 1000) + "</div>" +
                 "</a></div>";
+            ids.push(backend.imperaXtension.gameList[i].id);
+
         }
         document.getElementById('gameList').innerHTML = "";
         document.getElementById('gameList').appendChild(gameList);
+
+        for (var i2 = 0; i2 < ids.length; i2++) {
+            window.document.getElementById(ids[i2]).onclick = function () {
+                backend.imperaXtension.openTab("https://www.imperaonline.de/play/" + this.id);
+            }
+        }
     }
 
 };

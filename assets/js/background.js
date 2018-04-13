@@ -1,19 +1,36 @@
 var imperaXtension = {
     summaryTimer: 0,
-    passToken: function(){
-        let imperaStorage = sessionStorage.impera;
-        if (imperaStorage) {
+    openTab: function(url) {
+        imperaXtension.popUpUrl = url;
+        chrome.tabs.create({
+            url: "about:blank"
+        }, function(tab){
+            chrome.tabs.update(tab.id, {url: 'https://www.imperaonline.de/game/games'},
+                function() {
+                    imperaXtension.passToken(tab);
+                }
+            );
+        })
+    },
+    passToken: function(tab){
+        if (tab.url === "about:blank") {
+            setTimeout(function() {
+                imperaXtension.passToken(tab);
+            }, 10)
+        } else {
+            let imperaStorage = sessionStorage.impera || "{}";
             imperaStorage = JSON.parse(imperaStorage);
             imperaStorage.auth_token = imperaXtension.auth.access_token;
             imperaStorage.refresh_token = imperaXtension.auth.refresh_token;
             imperaStorage.isLoggedIn = true;
             imperaStorage.notifications = {
-                numberOfGames: imperaXtension.gameCounter,
-                numberOfMessages: imperaXtension.messageCounter
+                numberOfGames: String(imperaXtension.gameCounter),
+                numberOfMessages: String(imperaXtension.messageCounter)
             };
-            sessionStorage.setItem("impera", imperaStorage);
+            imperaStorage.userInfo = imperaXtension.userInfo;
+            imperaStorage.language = imperaXtension.userInfo.language || "en";
+            chrome.tabs.executeScript(tab.id, {code: 'sessionStorage.setItem("impera", \'' + JSON.stringify(imperaStorage) + '\');'});
         }
-
     },
     login: function(user, pass) {
         imperaXtension.user = user;
@@ -39,6 +56,7 @@ var imperaXtension = {
                     frontend.document.querySelector('#loggedInContainer').style.display ="block";
                 }
                 imperaXtension.getSummary();
+                imperaXtension.getUserInfo();
                 imperaXtension.summaryTimer = setInterval(imperaXtension.getSummary, 5000);
             }
         };
@@ -74,6 +92,17 @@ var imperaXtension = {
             }
         };
         xhr.open("GET", "https://www.imperaonline.de/api/notifications/summary", true);
+        xhr.setRequestHeader('Authorization', imperaXtension.auth.token_type + ' ' + imperaXtension.auth.access_token);
+        xhr.send();
+    },
+    getUserInfo: function() {
+        let xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                imperaXtension.userInfo = JSON.parse(xhr.responseText);
+            }
+        };
+        xhr.open("GET", "https://www.imperaonline.de/api/Account/UserInfo", true);
         xhr.setRequestHeader('Authorization', imperaXtension.auth.token_type + ' ' + imperaXtension.auth.access_token);
         xhr.send();
     },
