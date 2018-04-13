@@ -56,7 +56,7 @@ var imperaXtension = {
                 let summary = JSON.parse(xhr.responseText);
                 imperaXtension.gameCounter = summary.numberOfGames;
                 imperaXtension.messageCounter = summary.numberOfMessages;
-                let logoNumber = (imperaXtension.gameCounter > 9) ? "10" : imperaXtension.gameCounter;
+                let logoNumber = imperaXtension.gameCounter;
                 if (imperaXtension.gameCounter > 0) {
                     chrome.browserAction.setBadgeBackgroundColor({color:[255, 0, 0, 130]});
                     chrome.browserAction.setBadgeText({text: String(logoNumber)});
