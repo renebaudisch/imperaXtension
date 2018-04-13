@@ -36,10 +36,12 @@ chrome.storage.sync.get('imperaOnline', function(data) {
             document.getElementById('loginName').value = data.user;
             document.getElementById('loginPass').value = data.pass;
         } else {
-            if (backend.imperaXtension.gameCounter > 0) {
-                imperaXtension.renderGameList();
-            } else {
-                document.getElementById("gameList").innerText = "Du bist leider in keinem Spiel am Zug :(";
+            if (window.backend) {
+                if (backend.imperaXtension.gameList && backend.imperaXtension.gameList.length > 0){
+                    imperaXtension.renderGameList();
+                } else {
+                    document.getElementById("gameList").innerHTML = "<div class='headline'>Spiel&uuml;bersicht wird geladen...</div>";
+                }
             }
             document.querySelector('#loginContainer').style.display ="none";
             document.querySelector('#loggedInContainer').style.display ="block";

@@ -52,7 +52,7 @@ var imperaXtension = {
     getSummary: function(){
         let xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4  && xhr.status === 200) {
+            if (xhr.readyState === 4 && xhr.status === 200) {
                 let summary = JSON.parse(xhr.responseText);
                 imperaXtension.gameCounter = summary.numberOfGames;
                 imperaXtension.messageCounter = summary.numberOfMessages;
@@ -80,7 +80,7 @@ var imperaXtension = {
     getGameList: function() {
         let xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4) {
+            if (xhr.readyState === 4 && xhr.status === 200) {
                 imperaXtension.gameList = JSON.parse(xhr.responseText);
                 frontend.imperaXtension.renderGameList();
             }
