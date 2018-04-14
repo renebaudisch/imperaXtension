@@ -1,5 +1,6 @@
 var imperaXtension = {
     summaryTimer: 0,
+    supportedLanguages: ["en", "de"],
     openTab: function(url) {
         imperaXtension.popUpUrl = url;
         chrome.tabs.create({
@@ -20,7 +21,7 @@ var imperaXtension = {
             numberOfMessages: String(imperaXtension.messageCounter)
         };
         imperaStorage.userInfo = imperaXtension.userInfo;
-        imperaStorage.language = imperaXtension.userInfo.language || "en";
+        imperaStorage.language = imperaXtension.language || "en";
         chrome.tabs.executeScript(tab.id, {code: 'sessionStorage.setItem("impera", \'' + JSON.stringify(imperaStorage) + '\');'}, function() {
             chrome.tabs.update(imperaXtension.gameTabId, {url: imperaXtension.popUpUrl})
         });
@@ -28,6 +29,7 @@ var imperaXtension = {
     login: function(user, pass) {
         imperaXtension.user = user;
         imperaXtension.pass = pass;
+        imperaXtension.language = (imperaXtension.supportedLanguages.join(",").indexOf((navigator.language.split("-"))[0]) > 1) ? (navigator.language.split("-"))[0] : "en";
         let xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4) {
@@ -77,7 +79,7 @@ var imperaXtension = {
                     chrome.browserAction.setBadgeText({text: ""});
                     if (window.frontend){
                         imperaXtension.gameList = [];
-                        frontend.document.getElementById("gameList").innerText = frontend.imperaXtension.texts.noGame[imperaXtension.userInfo.language]();
+                        frontend.document.getElementById("gameList").innerText = frontend.imperaXtension.texts.noGame[imperaXtension.language]();
                     }
                 }
             }

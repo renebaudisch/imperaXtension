@@ -12,7 +12,7 @@ var imperaXtension = {
         },
         gamesList: {
             en: function() {return "It's your turn in " + backend.imperaXtension.gameCounter + ((backend.imperaXtension.gameCounter > 1) ? " games:" : " game:")},
-            de: function() {return "Du bist in " + backend.imperaXtension.gameCounter + ((backend.imperaXtension.gameCounter > 1) ? " diesen " + backend.imperaXtension.gameCounter + " Spielen" : " diesem " + backend.imperaXtension.gameCounter + " Spiel") +" am Zug:"}
+            de: function() {return "Du bist in " + ((backend.imperaXtension.gameCounter > 1) ? " diesen " + backend.imperaXtension.gameCounter + " Spielen" : " diesem Spiel") +" am Zug:"}
         },
     },
     humanDate: function msToTime(duration) {
@@ -32,7 +32,7 @@ var imperaXtension = {
         let ids = [];
         var gameList = document.createElement('div');
         gameList.setAttribute('class', "gamelist");
-        gameList.innerHTML = "<div class='headline'>" + imperaXtension.texts.gamesList[backend.imperaXtension.userInfo.language]() + "</div>";
+        gameList.innerHTML = "<div class='headline'>" + imperaXtension.texts.gamesList[backend.imperaXtension.language]() + "</div>";
         for (var i = 0; i < backend.imperaXtension.gameList.length; i++) {
             gameList.innerHTML += "<div><a target='_blank' id='" + backend.imperaXtension.gameList[i].id + "'>" +
                 "<div class='gameName'>" + backend.imperaXtension.gameList[i].name + "</div>" +
@@ -64,10 +64,10 @@ chrome.storage.sync.get('imperaOnline', function(data) {
                     if (backend.imperaXtension.gameList.length > 0) {
                         imperaXtension.renderGameList();
                     } else {
-                        document.getElementById("gameList").innerText = imperaXtension.texts.noGame[backend.imperaXtension.userInfo.language]();
+                        document.getElementById("gameList").innerText = imperaXtension.texts.noGame[backend.imperaXtension.language]();
                     }
                 } else {
-                    document.getElementById("gameList").innerHTML = "<div class='headline'>" + imperaXtension.texts.gamesLoading[backend.imperaXtension.userInfo.language]() + "</div>";
+                    document.getElementById("gameList").innerHTML = "<div class='headline'>" + imperaXtension.texts.gamesLoading[backend.imperaXtension.language]() + "</div>";
                 }
             }
             document.querySelector('#loginContainer').style.display ="none";
