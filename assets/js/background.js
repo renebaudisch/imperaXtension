@@ -3,34 +3,27 @@ var imperaXtension = {
     openTab: function(url) {
         imperaXtension.popUpUrl = url;
         chrome.tabs.create({
-            url: "about:blank"
+            url: "https://www.imperaonline.de"
         }, function(tab){
-            chrome.tabs.update(tab.id, {url: 'https://www.imperaonline.de/game/games'},
-                function() {
-                    imperaXtension.passToken(tab);
-                }
-            );
+            imperaXtension.gameTabId = tab.id;
+            imperaXtension.passToken(tab);
         })
     },
     passToken: function(tab){
-        if (tab.url === "about:blank") {
-            setTimeout(function() {
-                imperaXtension.passToken(tab);
-            }, 10)
-        } else {
-            let imperaStorage = sessionStorage.impera || "{}";
-            imperaStorage = JSON.parse(imperaStorage);
-            imperaStorage.auth_token = imperaXtension.auth.access_token;
-            imperaStorage.refresh_token = imperaXtension.auth.refresh_token;
-            imperaStorage.isLoggedIn = true;
-            imperaStorage.notifications = {
-                numberOfGames: String(imperaXtension.gameCounter),
-                numberOfMessages: String(imperaXtension.messageCounter)
-            };
-            imperaStorage.userInfo = imperaXtension.userInfo;
-            imperaStorage.language = imperaXtension.userInfo.language || "en";
-            chrome.tabs.executeScript(tab.id, {code: 'sessionStorage.setItem("impera", \'' + JSON.stringify(imperaStorage) + '\');'});
-        }
+        let imperaStorage = sessionStorage.impera || "{}";
+        imperaStorage = JSON.parse(imperaStorage);
+        imperaStorage.access_token = imperaXtension.auth.access_token;
+        imperaStorage.refresh_token = imperaXtension.auth.refresh_token;
+        imperaStorage.isLoggedIn = true;
+        imperaStorage.notifications = {
+            numberOfGames: String(imperaXtension.gameCounter),
+            numberOfMessages: String(imperaXtension.messageCounter)
+        };
+        imperaStorage.userInfo = imperaXtension.userInfo;
+        imperaStorage.language = imperaXtension.userInfo.language || "en";
+        chrome.tabs.executeScript(tab.id, {code: 'sessionStorage.setItem("impera", \'' + JSON.stringify(imperaStorage) + '\');'}, function() {
+            chrome.tabs.update(imperaXtension.gameTabId, {url: imperaXtension.popUpUrl})
+        });
     },
     login: function(user, pass) {
         imperaXtension.user = user;
@@ -78,15 +71,13 @@ var imperaXtension = {
                 if (imperaXtension.gameCounter > 0) {
                     chrome.browserAction.setBadgeBackgroundColor({color:[255, 0, 0, 130]});
                     chrome.browserAction.setBadgeText({text: String(logoNumber)});
-                    if (window.frontend){
-                        imperaXtension.getGameList();
-                    }
+                    imperaXtension.getGameList();
                 } else {
                     chrome.browserAction.setBadgeBackgroundColor({color:[190, 190, 190, 230]});
                     chrome.browserAction.setBadgeText({text: ""});
                     if (window.frontend){
                         imperaXtension.gameList = [];
-                        frontend.document.getElementById("gameList").innerText = "Du bist leider in keinem Spiel am Zug :(";
+                        frontend.document.getElementById("gameList").innerText = frontend.imperaXtension.texts.noGame[imperaXtension.userInfo.language]();
                     }
                 }
             }
@@ -111,7 +102,9 @@ var imperaXtension = {
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 imperaXtension.gameList = JSON.parse(xhr.responseText);
-                frontend.imperaXtension.renderGameList();
+                if (window.frontend){
+                    frontend.imperaXtension.renderGameList();
+                }
             }
         };
         xhr.open("GET", "https://www.imperaonline.de/api/games/myturn", true);
@@ -123,7 +116,7 @@ var imperaXtension = {
         chrome.storage.sync.set({
             imperaOnline: {}
         });
-        imperaXtension.gameList = [];
+        imperaXtension.gameList = undefined;
         imperaXtension.gameCounter = 0;
         imperaXtension.messageCounter = 0;
         imperaXtension.user = "";

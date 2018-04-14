@@ -1,6 +1,20 @@
 let loginSubmit = document.getElementById('loginSubmit');
 
 var imperaXtension = {
+    texts: {
+        gamesLoading: {
+            en: function() {return "Please wait while gamelist is loading..."},
+            de: function() {return "Spiel&uuml;bersicht wird geladen..."}
+        },
+        noGame: {
+            en: function() {return "Sorry, no games to play :("},
+            de: function() {return "Du bist leider in keinem Spiel am Zug :("}
+        },
+        gamesList: {
+            en: function() {return "It's your turn in " + backend.imperaXtension.gameCounter + ((backend.imperaXtension.gameCounter > 1) ? " games:" : " game:")},
+            de: function() {return "Du bist in " + backend.imperaXtension.gameCounter + ((backend.imperaXtension.gameCounter > 1) ? " diesen " + backend.imperaXtension.gameCounter + " Spielen" : " diesem " + backend.imperaXtension.gameCounter + " Spiel") +" am Zug:"}
+        },
+    },
     humanDate: function msToTime(duration) {
         var seconds = parseInt((duration/1000)%60)
             , minutes = parseInt((duration/(1000*60))%60)
@@ -18,7 +32,7 @@ var imperaXtension = {
         let ids = [];
         var gameList = document.createElement('div');
         gameList.setAttribute('class', "gamelist");
-        gameList.innerHTML = "<div class='headline'>Du bist in diesen " + backend.imperaXtension.gameCounter + " Spielen am Zug:</div>";
+        gameList.innerHTML = "<div class='headline'>" + imperaXtension.texts.gamesList[backend.imperaXtension.userInfo.language]() + "</div>";
         for (var i = 0; i < backend.imperaXtension.gameList.length; i++) {
             gameList.innerHTML += "<div><a target='_blank' id='" + backend.imperaXtension.gameList[i].id + "'>" +
                 "<div class='gameName'>" + backend.imperaXtension.gameList[i].name + "</div>" +
@@ -46,10 +60,14 @@ chrome.storage.sync.get('imperaOnline', function(data) {
             document.getElementById('loginPass').value = data.pass;
         } else {
             if (window.backend) {
-                if (backend.imperaXtension.gameList && backend.imperaXtension.gameList.length > 0){
-                    imperaXtension.renderGameList();
+                if (backend.imperaXtension.gameList) {
+                    if (backend.imperaXtension.gameList.length > 0) {
+                        imperaXtension.renderGameList();
+                    } else {
+                        document.getElementById("gameList").innerText = imperaXtension.texts.noGame[backend.imperaXtension.userInfo.language]();
+                    }
                 } else {
-                    document.getElementById("gameList").innerHTML = "<div class='headline'>Spiel&uuml;bersicht wird geladen...</div>";
+                    document.getElementById("gameList").innerHTML = "<div class='headline'>" + imperaXtension.texts.gamesLoading[backend.imperaXtension.userInfo.language]() + "</div>";
                 }
             }
             document.querySelector('#loginContainer').style.display ="none";
