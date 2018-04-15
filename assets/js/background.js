@@ -7,7 +7,9 @@ var imperaXtension = {
             url: "https://www.imperaonline.de"
         }, function(tab){
             imperaXtension.gameTabId = tab.id;
-            imperaXtension.passToken(tab);
+            if (imperaXtension.auth && imperaXtension.auth.access_token) {
+                imperaXtension.passToken(tab);
+            }
         })
     },
     passToken: function(tab){
@@ -79,7 +81,7 @@ var imperaXtension = {
                     chrome.browserAction.setBadgeText({text: ""});
                     if (window.frontend){
                         imperaXtension.gameList = [];
-                        frontend.document.getElementById("gameList").innerHTML = "<div style='text-align:center;'>" + frontend.imperaXtension.texts.noGame[imperaXtension.language]() + "</div>";
+                        frontend.document.getElementById("gameList").innerHTML = "<div style='text-align:center;cursor: not-allowed;'>" + frontend.imperaXtension.texts.noGame[imperaXtension.language]() + "</div>";
                     }
                 }
             }

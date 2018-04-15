@@ -1,5 +1,3 @@
-let loginSubmit = document.getElementById('loginSubmit');
-
 var imperaXtension = {
     texts: {
         gamesLoading: {
@@ -16,7 +14,7 @@ var imperaXtension = {
         },
     },
     humanDate: function msToTime(duration) {
-        var seconds = parseInt((duration/1000)%60)
+        let seconds = parseInt((duration/1000)%60)
             , minutes = parseInt((duration/(1000*60))%60)
             , hours = parseInt((duration/(1000*60*60))%24)
             , days = parseInt((duration/(1000*60*60*24))%7);
@@ -30,10 +28,10 @@ var imperaXtension = {
     },
     renderGameList: function() {
         let ids = [];
-        var gameList = document.createElement('div');
+        let gameList = document.createElement('div');
         gameList.setAttribute('class', "gamelist");
         gameList.innerHTML = "<div class='headline'>" + imperaXtension.texts.gamesList[backend.imperaXtension.language]() + "</div>";
-        for (var i = 0; i < backend.imperaXtension.gameList.length; i++) {
+        for (let i = 0; i < backend.imperaXtension.gameList.length; i++) {
             gameList.innerHTML += "<div><a target='_blank' id='" + backend.imperaXtension.gameList[i].id + "'>" +
                 "<div class='gameName'>" + backend.imperaXtension.gameList[i].name + "</div>" +
                 "<div class='gameTime'>" + imperaXtension.humanDate(backend.imperaXtension.gameList[i].timeoutSecondsLeft * 1000) + "</div>" +
@@ -44,7 +42,7 @@ var imperaXtension = {
         document.getElementById('gameList').innerHTML = "";
         document.getElementById('gameList').appendChild(gameList);
 
-        for (var i2 = 0; i2 < ids.length; i2++) {
+        for (let i2 = 0; i2 < ids.length; i2++) {
             window.document.getElementById(ids[i2]).onclick = function () {
                 backend.imperaXtension.openTab("https://www.imperaonline.de/play/" + this.id);
             }
@@ -64,7 +62,7 @@ chrome.storage.sync.get('imperaOnline', function(data) {
                     if (backend.imperaXtension.gameList.length > 0) {
                         imperaXtension.renderGameList();
                     } else {
-                        document.getElementById("gameList").innerHTML = "<div style='text-align:center;'>" + imperaXtension.texts.noGame[backend.imperaXtension.language]() + "</div>";
+                        document.getElementById("gameList").innerHTML = "<div style='text-align:center;cursor: not-allowed;'>" + imperaXtension.texts.noGame[backend.imperaXtension.language]() + "</div>";
                     }
                 } else {
                     document.getElementById("gameList").innerHTML = "<div class='headline'>" + imperaXtension.texts.gamesLoading[backend.imperaXtension.language]() + "</div>";
@@ -82,14 +80,18 @@ chrome.storage.sync.get('imperaOnline', function(data) {
 var backend = chrome.extension.getBackgroundPage();
 chrome.extension.getBackgroundPage().frontend = this;
 
-loginSubmit.onclick = function() {
-    var user = document.getElementById('loginName').value;
-    var pass = document.getElementById('loginPass').value;
+document.getElementById('loginSubmit').onclick = function() {
+    let user = document.getElementById('loginName').value;
+    let pass = document.getElementById('loginPass').value;
     backend.imperaXtension.login(user, pass);
 };
 
-logout.onclick = function() {
+document.getElementById('logout').onclick = function() {
     backend.imperaXtension.logout();
     document.querySelector('#loginContainer').style.display ="block";
     document.querySelector('#loggedInContainer').style.display ="none";
+};
+
+document.getElementById('header').onclick = function () {
+    backend.imperaXtension.openTab("https://www.imperaonline.de/game/");
 };
