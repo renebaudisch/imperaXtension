@@ -64,7 +64,7 @@ chrome.storage.sync.get('imperaOnline', function(data) {
                     if (backend.imperaXtension.gameList.length > 0) {
                         imperaXtension.renderGameList();
                     } else {
-                        document.getElementById("gameList").innerText = imperaXtension.texts.noGame[backend.imperaXtension.language]();
+                        document.getElementById("gameList").innerHTML = "<div style='text-align:center;'>" + imperaXtension.texts.noGame[backend.imperaXtension.language]() + "</div>";
                     }
                 } else {
                     document.getElementById("gameList").innerHTML = "<div class='headline'>" + imperaXtension.texts.gamesLoading[backend.imperaXtension.language]() + "</div>";

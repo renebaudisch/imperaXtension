@@ -79,7 +79,7 @@ var imperaXtension = {
                     chrome.browserAction.setBadgeText({text: ""});
                     if (window.frontend){
                         imperaXtension.gameList = [];
-                        frontend.document.getElementById("gameList").innerText = frontend.imperaXtension.texts.noGame[imperaXtension.language]();
+                        frontend.document.getElementById("gameList").innerText = "<div style='text-align:center;'>" + frontend.imperaXtension.texts.noGame[imperaXtension.language]() + "</div>";
                     }
                 }
             }
