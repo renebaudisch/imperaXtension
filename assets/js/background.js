@@ -1,3 +1,9 @@
+chrome.runtime.onInstalled.addListener(function() {
+    chrome.storage.sync.set({
+        imperaOnline: {}
+    });
+});
+
 var imperaXtension = {
     summaryTimer: 0,
     supportedLanguages: ["en", "de"],
