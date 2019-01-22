@@ -6,6 +6,8 @@ chrome.runtime.onInstalled.addListener(function() {
 
 var imperaXtension = {
     summaryTimer: 0,
+    joinCounter: 0,
+    gameCounter: 0,
     supportedLanguages: ["en", "de"],
     openTab: function(url) {
         imperaXtension.popUpUrl = url;
@@ -26,6 +28,7 @@ var imperaXtension = {
         imperaStorage.isLoggedIn = true;
         imperaStorage.notifications = {
             numberOfGames: String(imperaXtension.gameCounter),
+            numberOfOpenGames: String(imperaXtension.joinCounter),
             numberOfMessages: String(imperaXtension.messageCounter)
         };
         imperaStorage.userInfo = imperaXtension.userInfo;
@@ -58,8 +61,9 @@ var imperaXtension = {
                     frontend.document.querySelector('#loginContainer').style.display ="none";
                     frontend.document.querySelector('#loggedInContainer').style.display ="block";
                 }
-                imperaXtension.getSummary();
                 imperaXtension.getUserInfo();
+                imperaXtension.getOpenSpringGames();
+                imperaXtension.getSummary();
                 imperaXtension.summaryTimer = setInterval(imperaXtension.getSummary, 5000);
             }
         };
@@ -76,12 +80,18 @@ var imperaXtension = {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 let summary = JSON.parse(xhr.responseText);
                 imperaXtension.gameCounter = summary.numberOfGames;
+                imperaXtension.joinCounter = summary.numberOfOpenGames;
                 imperaXtension.messageCounter = summary.numberOfMessages;
-                let logoNumber = imperaXtension.gameCounter;
-                if (imperaXtension.gameCounter > 0) {
+                let logoNumber = imperaXtension.gameCounter + imperaXtension.joinCounter;
+                if (logoNumber > 0) {
                     chrome.browserAction.setBadgeBackgroundColor({color:[255, 0, 0, 130]});
                     chrome.browserAction.setBadgeText({text: String(logoNumber)});
-                    imperaXtension.getGameList();
+                    if (imperaXtension.gameCounter > 0) {
+                        imperaXtension.getGameList();
+                    }
+                    if (imperaXtension.joinCounter > 0) {
+                        imperaXtension.getOpenSpringGames();
+                    }
                 } else {
                     chrome.browserAction.setBadgeBackgroundColor({color:[190, 190, 190, 230]});
                     chrome.browserAction.setBadgeText({text: ""});
@@ -121,13 +131,37 @@ var imperaXtension = {
         xhr.setRequestHeader('Authorization', imperaXtension.auth.token_type + ' ' + imperaXtension.auth.access_token);
         xhr.send();
     },
+    getOpenSpringGames: function() {
+        imperaXtension.joinCounter = 0;
+        let xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                imperaXtension.joinList = [];
+                let openGames = JSON.parse(xhr.responseText);
+                for (let i=0; i < openGames.length; i++) {
+                    if (openGames[i].createdByName.match(/^(imperator|caesarius|deefault|feuerdieb)$/i)) {
+                        imperaXtension.joinList.push(openGames[i]);
+                        imperaXtension.joinCounter++;
+                    }
+                }
+                if (window.frontend){
+                    frontend.imperaXtension.renderOpenGamesList();
+                }
+            }
+        };
+        xhr.open("GET", "https://www.imperaonline.de/api/games/open", true);
+        xhr.setRequestHeader('Authorization', imperaXtension.auth.token_type + ' ' + imperaXtension.auth.access_token);
+        xhr.send();
+    },
     logout: function() {
         clearInterval(imperaXtension.summaryTimer);
         chrome.storage.sync.set({
             imperaOnline: {}
         });
         imperaXtension.gameList = undefined;
+        imperaXtension.joinList = undefined;
         imperaXtension.gameCounter = 0;
+        imperaXtension.joinCounter = 0;
         imperaXtension.messageCounter = 0;
         imperaXtension.user = "";
         imperaXtension.pass = "";

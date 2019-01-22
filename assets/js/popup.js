@@ -12,6 +12,10 @@ var imperaXtension = {
             en: function() {return "It's your turn in " + backend.imperaXtension.gameCounter + ((backend.imperaXtension.gameCounter > 1) ? " games:" : " game:")},
             de: function() {return "Du bist in " + ((backend.imperaXtension.gameCounter > 1) ? " diesen " + backend.imperaXtension.gameCounter + " Spielen" : " diesem Spiel") +" am Zug:"}
         },
+        joinList: {
+            en: function() {return "You hould join " + backend.imperaXtension.joinCounter + ((backend.imperaXtension.joinCounter > 1) ? " games:" : " game:")},
+            de: function() {return "Wir warten auf Dich in " + ((backend.imperaXtension.joinCounter > 1) ? " diesen " + backend.imperaXtension.joinCounter + " Spielen:" : " diesem Spiel:")}
+        },
     },
     humanDate: function msToTime(duration) {
         let seconds = parseInt((duration/1000)%60)
@@ -47,6 +51,28 @@ var imperaXtension = {
                 backend.imperaXtension.openTab("https://www.imperaonline.de/play/" + this.id);
             }
         }
+    },
+    renderOpenGamesList: function() {
+        let ids = [];
+        let joinList = document.createElement('div');
+        joinList.setAttribute('class', "joinlist");
+        joinList.innerHTML = "<div class='headline'>" + imperaXtension.texts.joinList[backend.imperaXtension.language]() + "</div>";
+        for (let i = 0; i < backend.imperaXtension.joinList.length; i++) {
+            joinList.innerHTML += "<div><a target='_blank' id='" + backend.imperaXtension.joinList[i].id + "'>" +
+                "<div class='gameName'>" + backend.imperaXtension.joinList[i].name + "</div>" +
+                "</a></div>";
+            ids.push(backend.imperaXtension.joinList[i].id);
+
+        }
+        document.getElementById('joinList').innerHTML = "";
+        document.getElementById('joinList').appendChild(joinList);
+
+        for (let i2 = 0; i2 < ids.length; i2++) {
+            window.document.getElementById(ids[i2]).onclick = function () {
+                backend.imperaXtension.openTab("https://www.imperaonline.de/game/games/join");
+                // backend.imperaXtension.openTab("https://www.imperaonline.de/api/games/" + this.id + "/join?password=SPRING");
+            }
+        }
     }
 
 };
@@ -66,6 +92,11 @@ chrome.storage.sync.get('imperaOnline', function(data) {
                     }
                 } else {
                     document.getElementById("gameList").innerHTML = "<div class='headline'>" + imperaXtension.texts.gamesLoading[backend.imperaXtension.language]() + "</div>";
+                }
+                if (backend.imperaXtension.joinList) {
+                    if (backend.imperaXtension.joinList.length > 0) {
+                        imperaXtension.renderOpenGamesList();
+                    }
                 }
             }
             document.querySelector('#loginContainer').style.display ="none";
