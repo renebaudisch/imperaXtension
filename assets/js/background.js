@@ -63,8 +63,6 @@ var imperaXtension = {
                 }
                 imperaXtension.getUserInfo();
                 imperaXtension.getOpenSpringGames();
-                imperaXtension.getSummary();
-                imperaXtension.summaryTimer = setInterval(imperaXtension.getSummary, 5000);
             }
         };
         xhr.open("POST", "https://www.imperaonline.de/api/Account/token?", true);
@@ -80,7 +78,6 @@ var imperaXtension = {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 let summary = JSON.parse(xhr.responseText);
                 imperaXtension.gameCounter = summary.numberOfGames;
-                imperaXtension.joinCounter = summary.numberOfOpenGames;
                 imperaXtension.messageCounter = summary.numberOfMessages;
                 let logoNumber = imperaXtension.gameCounter + imperaXtension.joinCounter;
                 if (logoNumber > 0) {
@@ -89,8 +86,8 @@ var imperaXtension = {
                     if (imperaXtension.gameCounter > 0) {
                         imperaXtension.getGameList();
                     }
-                    if (imperaXtension.joinCounter > 0) {
-                        imperaXtension.getOpenSpringGames();
+                    if (window.frontend && imperaXtension.joinCounter > 0){
+                        frontend.imperaXtension.renderOpenGamesList();
                     }
                 } else {
                     chrome.browserAction.setBadgeBackgroundColor({color:[190, 190, 190, 230]});
@@ -132,11 +129,11 @@ var imperaXtension = {
         xhr.send();
     },
     getOpenSpringGames: function() {
+        imperaXtension.joinList = [];
         imperaXtension.joinCounter = 0;
         let xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4 && xhr.status === 200) {
-                imperaXtension.joinList = [];
                 let openGames = JSON.parse(xhr.responseText);
                 for (let i=0; i < openGames.length; i++) {
                     if (openGames[i].createdByName.match(/^(imperator|caesarius|deefault|feuerdieb)$/i)) {
@@ -144,9 +141,8 @@ var imperaXtension = {
                         imperaXtension.joinCounter++;
                     }
                 }
-                if (window.frontend){
-                    frontend.imperaXtension.renderOpenGamesList();
-                }
+                imperaXtension.getSummary();
+                imperaXtension.summaryTimer = setInterval(imperaXtension.getSummary, 5000);
             }
         };
         xhr.open("GET", "https://www.imperaonline.de/api/games/open", true);
