@@ -97,6 +97,12 @@ var imperaXtension = {
                         frontend.document.getElementById("gameList").innerHTML = "<div style='text-align:center;cursor: not-allowed;'>" + frontend.imperaXtension.texts.noGame[imperaXtension.language]() + "</div>";
                     }
                 }
+            } else if (xhr.status === 200) {
+                if (imperaXtension.userData.user && imperaXtension.userData.pass) {
+                    imperaXtension.login(imperaXtension.userData.user, imperaXtension.userData.pass);
+                } else {
+                    imperaXtension.logout();
+                }
             }
         };
         xhr.open("GET", "https://www.imperaonline.de/api/notifications/summary", true);
@@ -121,6 +127,12 @@ var imperaXtension = {
                 imperaXtension.gameList = JSON.parse(xhr.responseText);
                 if (window.frontend){
                     frontend.imperaXtension.renderGameList();
+                }
+            } else if (xhr.status === 200) {
+                if (imperaXtension.userData.user && imperaXtension.userData.pass) {
+                    imperaXtension.login(imperaXtension.userData.user, imperaXtension.userData.pass);
+                } else {
+                    imperaXtension.logout();
                 }
             }
         };
@@ -169,7 +181,7 @@ var imperaXtension = {
 };
 
 chrome.storage.sync.get('imperaOnline', function(data) {
-    data = data.imperaOnline;
+    imperaXtension.userData = data = data.imperaOnline;
     if (data.user && data.pass) {
         imperaXtension.login(data.user, data.pass);
     }
