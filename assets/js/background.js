@@ -97,7 +97,7 @@ var imperaXtension = {
                         frontend.document.getElementById("gameList").innerHTML = "<div style='text-align:center;cursor: not-allowed;'>" + frontend.imperaXtension.texts.noGame[imperaXtension.language]() + "</div>";
                     }
                 }
-            } else if (xhr.status === 200) {
+            } else if (xhr.status === 401) {
                 if (imperaXtension.userData.user && imperaXtension.userData.pass) {
                     imperaXtension.login(imperaXtension.userData.user, imperaXtension.userData.pass);
                 } else {
@@ -143,21 +143,35 @@ var imperaXtension = {
     getOpenSpringGames: function() {
         imperaXtension.joinList = [];
         imperaXtension.joinCounter = 0;
+
         let xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4 && xhr.status === 200) {
-                let openGames = JSON.parse(xhr.responseText);
-                for (let i=0; i < openGames.length; i++) {
-                    if (openGames[i].createdByName.match(/^(imperator|caesarius|deefault|feuerdieb)$/i)) {
-                        imperaXtension.joinList.push(openGames[i]);
-                        imperaXtension.joinCounter++;
-                    }
+                let allMyGames = JSON.parse(xhr.responseText);
+                imperaXtension.allMyGames = {};
+                for (let i=0; i < allMyGames.length; i++) {
+                    imperaXtension.allMyGames[allMyGames[i].id] = true;
                 }
-                imperaXtension.getSummary();
-                imperaXtension.summaryTimer = setInterval(imperaXtension.getSummary, 5000);
+                let xhr2 = new XMLHttpRequest();
+                xhr2.onreadystatechange = function() {
+                    if (xhr2.readyState === 4 && xhr2.status === 200) {
+                        let openGames = JSON.parse(xhr2.responseText);
+                        for (let i=0; i < openGames.length; i++) {
+                            if (!imperaXtension.allMyGames[openGames[i].id] && openGames[i].createdByName.match(/^(imperator|caesarius|deefault|feuerdieb)$/i)) {
+                                imperaXtension.joinList.push(openGames[i]);
+                                imperaXtension.joinCounter++;
+                            }
+                        }
+                        imperaXtension.getSummary();
+                        imperaXtension.summaryTimer = setInterval(imperaXtension.getSummary, 5000);
+                    }
+                };
+                xhr2.open("GET", "https://www.imperaonline.de/api/games/open", true);
+                xhr2.setRequestHeader('Authorization', imperaXtension.auth.token_type + ' ' + imperaXtension.auth.access_token);
+                xhr2.send();
             }
         };
-        xhr.open("GET", "https://www.imperaonline.de/api/games/open", true);
+        xhr.open("GET", "https://www.imperaonline.de/api/games/my", true);
         xhr.setRequestHeader('Authorization', imperaXtension.auth.token_type + ' ' + imperaXtension.auth.access_token);
         xhr.send();
     },
@@ -182,7 +196,7 @@ var imperaXtension = {
 
 chrome.storage.sync.get('imperaOnline', function(data) {
     imperaXtension.userData = data = data.imperaOnline;
-    if (data.user && data.pass) {
+    if (data && data.user && data.pass) {
         imperaXtension.login(data.user, data.pass);
     }
 });
