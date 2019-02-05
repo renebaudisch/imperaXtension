@@ -162,6 +162,7 @@ var imperaXtension = {
                                 imperaXtension.joinCounter++;
                             }
                         }
+                        clearInterval(imperaXtension.summaryTimer);
                         imperaXtension.getSummary();
                         imperaXtension.summaryTimer = setInterval(imperaXtension.getSummary, 5000);
                     }
