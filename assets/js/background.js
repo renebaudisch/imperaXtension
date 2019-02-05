@@ -157,7 +157,7 @@ var imperaXtension = {
                     if (xhr2.readyState === 4 && xhr2.status === 200) {
                         let openGames = JSON.parse(xhr2.responseText);
                         for (let i=0; i < openGames.length; i++) {
-                            if (!imperaXtension.allMyGames[openGames[i].id] && openGames[i].createdByName.match(/^(imperator|caesarius|deefault|feuerdieb)$/i)) {
+                            if (!imperaXtension.allMyGames[openGames[i].id] && openGames[i].createdByName.match(/^(imperator|caesarius|deefault|feuerdieb|Default1024)$/i)) {
                                 imperaXtension.joinList.push(openGames[i]);
                                 imperaXtension.joinCounter++;
                             }
