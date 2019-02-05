@@ -98,7 +98,7 @@ var imperaXtension = {
                     }
                 }
             } else if (xhr.status === 401) {
-                if (imperaXtension.userData.user && imperaXtension.userData.pass) {
+                if (imperaXtension.userData && imperaXtension.userData.user && imperaXtension.userData.pass) {
                     imperaXtension.login(imperaXtension.userData.user, imperaXtension.userData.pass);
                 } else {
                     imperaXtension.logout();
@@ -128,8 +128,8 @@ var imperaXtension = {
                 if (window.frontend){
                     frontend.imperaXtension.renderGameList();
                 }
-            } else if (xhr.status === 200) {
-                if (imperaXtension.userData.user && imperaXtension.userData.pass) {
+            } else if (xhr.status === 401) {
+                if (imperaXtension.userData && imperaXtension.userData.user && imperaXtension.userData.pass) {
                     imperaXtension.login(imperaXtension.userData.user, imperaXtension.userData.pass);
                 } else {
                     imperaXtension.logout();
